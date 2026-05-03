@@ -1,0 +1,65 @@
+<?php
+session_start();
+if($_POST){
+
+// SANS la partie recherche dans base de donnees
+    $password1=$_POST["pass_1"];
+    $password2=$_POST["pass_2"];
+        $jsonContent = file_get_contents('infos.json');
+        $data = json_decode($jsonContent, true);
+            if($password1==$password2){
+                
+             
+            $nom=$_POST["nom"];
+            $prenom=$_POST["prenom"];
+            $date=$_POST["dat"];
+            $email=$_POST["email"];
+            
+            
+            $data=[
+                "Nom"=>$nom,
+                "Prenom"=>$prenom,
+                "Date"=>$date,
+                "Email"=>$email,
+                "Password"=>$password1
+                ];
+            $monfichier = "infos.json";
+            //$utilisateurs = [];
+            
+            // Lecture du fichier existant s'il existe
+            if (file_exists($monfichier)) {
+                $contenu = file_get_contents($monfichier);
+                if (!empty($contenu)) {
+                    $utilisateurs = json_decode($contenu, true);
+                        // Si ce n'est pas un tableau, on le transforme
+                        if (!is_array($utilisateurs)) {
+                            $utilisateurs = [];
+                            }
+                }
+                } 
+                // Ajout du nouvel utilisateur
+                $utilisateurs[] = $data;
+                
+                // Conversion en JSON
+                $jsonData = json_encode($utilisateurs, JSON_PRETTY_PRINT);
+                
+                // Enregistrement dans le fichier
+                if (file_put_contents($monfichier, $jsonData)) {
+                    $_SESSION["message"] = "Registration successful!";
+                    header("Location: index.php");
+                    exit();
+                    } 
+                    else {
+                      $_SESSION["message"] = "Registration error!";
+                      header("Location: index.php");
+                      exit();
+                        }   
+                      }
+                      else {
+                            $_SESSION["message"] = "Wrong Password!";
+                            header("Location: index.php");
+                            exit();
+                            }
+            }   
+        
+?>
